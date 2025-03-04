@@ -43,9 +43,9 @@ const Header = () => {
 
       
         <div className="flex items-center space-x-4">
-          <Link to="/login" className="text-blue-500 hover:underline flex items-center">
-            <User size={18} className="mr-1" /> Login / Register
-          </Link>
+        <Link to="/signup" className="text-blue-500 hover:underline flex items-center">
+            <User size={18} className="mr-1" /> Sign Up
+        </Link>
           <Search size={20} className="cursor-pointer hover:text-blue-500" />
           <div className="relative cursor-pointer">
             <ShoppingCart size={20} className="hover:text-blue-500" />
