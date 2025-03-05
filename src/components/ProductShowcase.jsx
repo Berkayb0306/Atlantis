@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProductCard from "./ProductCard";
 
@@ -17,7 +17,6 @@ const ProductShowcase = () => {
 
   return (
     <div className="container mx-auto px-6 py-12">
-
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">BESTSELLER PRODUCTS</h2>
         <div className="flex items-center space-x-6">
@@ -40,10 +39,7 @@ const ProductShowcase = () => {
           </div>
         </div>
       </div>
-
-   
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-       
         <div className="col-span-1 bg-yellow-400 p-8 flex flex-col justify-center items-start text-black">
           <h3 className="text-lg font-bold">FURNITURE</h3>
           <p className="text-sm">5 Items</p>
@@ -53,17 +49,22 @@ const ProductShowcase = () => {
             className="w-full mt-4 rounded-lg"
           />
         </div>
-
-       
         <div className="col-span-3 grid grid-cols-2 md:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              image={product.image}
-              title={product.title}
-              price={product.price}
-            />
-          ))}
+          {products.map((product, index) => {
+            if (!product.id) {
+              console.warn("Ürün ID'si eksik!", product);
+            }
+
+            return (
+              <ProductCard
+                key={product.id || index} // ✅ ID eksikse, geçici olarak index kullan
+                id={product.id || index} // ✅ Eğer ID yoksa index değerini kullan
+                image={product.image}
+                title={product.title}
+                price={product.price}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

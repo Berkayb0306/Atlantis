@@ -32,7 +32,39 @@ const products = [
     price: 16.48, 
     discountPrice: 6.48, 
     image: "https://images.pexels.com/photos/4041694/pexels-photo-4041694.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
-  }
+  },
+  { 
+    id: 5, 
+    title: "Graphic Design", 
+    department: "English Department", 
+    price: 16.48, 
+    discountPrice: 6.48, 
+    image: "https://images.pexels.com/photos/4041694/pexels-photo-4041694.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
+  },
+  { 
+    id: 6, 
+    title: "Graphic Design", 
+    department: "English Department", 
+    price: 16.48, 
+    discountPrice: 6.48, 
+    image: "https://images.pexels.com/photos/4041694/pexels-photo-4041694.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
+  },
+  { 
+    id: 7, 
+    title: "Graphic Design", 
+    department: "English Department", 
+    price: 16.48, 
+    discountPrice: 6.48, 
+    image: "https://images.pexels.com/photos/4041694/pexels-photo-4041694.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
+  },
+  { 
+    id: 8, 
+    title: "Graphic Design", 
+    department: "English Department", 
+    price: 16.48, 
+    discountPrice: 6.48, 
+    image: "https://images.pexels.com/photos/4041694/pexels-photo-4041694.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
+  },
 ];
 
 export default function BestsellerProducts() {
@@ -44,6 +76,7 @@ export default function BestsellerProducts() {
         {products.map((product) => (
           <ProductCard 
             key={product.id} 
+            id={product.id} // ✅ Eksik olan `id` prop'u eklendi!
             image={product.image} 
             title={product.title} 
             price={product.discountPrice} 
