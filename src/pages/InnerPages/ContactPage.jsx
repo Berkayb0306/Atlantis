@@ -1,6 +1,6 @@
-import ContactSection from "../components/ContactSection";
-import OfficeCards from "../components/OfficeCards";
-import LetsTalkSection from "../components/LetsTalkSection";
+import ContactSection from "../../components/ContactSection";
+import OfficeCards from "../../components/OfficeCards";
+import LetsTalkSection from "../../components/LetsTalkSection";
 
 const ContactPage = () => {
   return (
