@@ -1,13 +1,18 @@
-import { createStore, applyMiddleware } from "redux";
-import { composeWithDevTools } from "redux-devtools-extension";
-import thunk from "redux-thunk";
+import { createStore, applyMiddleware, compose } from "redux";
+import { thunk } from "redux-thunk"; // Named import kullanın
 import logger from "redux-logger";
 import rootReducer from "./reducers/rootReducer";
 
-// Redux store'u oluştur
+// Middleware'leri tanımla
+const middleware = [thunk, logger];
+
+// Redux DevTools desteği için alternatif yöntem
+const composeEnhancers =
+  (typeof window !== "undefined" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
+
 const store = createStore(
   rootReducer,
-  composeWithDevTools(applyMiddleware(thunk, logger))
+  composeEnhancers(applyMiddleware(...middleware))
 );
 
 export default store;
