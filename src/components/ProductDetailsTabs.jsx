@@ -30,77 +30,25 @@ const ProductDetailsTabs = ({ product }) => {
 
       {/* Sekme İçerikleri */}
       {activeTab === "description" && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            {/* Sütun-1: Örnek Resim ve Metin */}
-            <img
-            src="https://picsum.photos/400/300"
-            alt="Placeholder"
-            className="rounded-md mb-4 w-full object-cover"
-            />
-            <p className="text-gray-700 font-semibold">the quick fox jumps over</p>
-            <p className="text-gray-700">the quick fox jumps over the lazy dog</p>
-          </div>
-          <div>
-            {/* Sütun-2: Örnek Başlık ve Metin */}
-            <h3 className="text-gray-800 font-semibold mb-2">the quick fox jumps over</h3>
-            <p className="text-gray-700">the quick fox jumps over the lazy dog</p>
-            <p className="text-gray-700 mt-2">the quick fox jumps over the lazy dog</p>
-          </div>
-          <div>
-            {/* Sütun-3: Örnek Başlık ve Metin */}
-            <h3 className="text-gray-800 font-semibold mb-2">the quick fox jumps over</h3>
-            <p className="text-gray-700">the quick fox jumps over the lazy dog</p>
-            <p className="text-gray-700 mt-2">the quick fox jumps over the lazy dog</p>
-          </div>
+        <div className="text-gray-700">
+          <p>{product.description || "No description available."}</p>
         </div>
       )}
 
       {activeTab === "additional" && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <img
-              src="https://picsum.photos/400/300"
-            alt="Placeholder"
-              className="rounded-md mb-4 w-full object-cover"
-            />
-            <p className="text-gray-700 font-semibold">the quick fox jumps over</p>
-            <p className="text-gray-700">the quick fox jumps over the lazy dog</p>
-          </div>
-          <div>
-            <h3 className="text-gray-800 font-semibold mb-2">the quick fox jumps over</h3>
-            <p className="text-gray-700">the quick fox jumps over the lazy dog</p>
-            <p className="text-gray-700 mt-2">the quick fox jumps over the lazy dog</p>
-          </div>
-          <div>
-            <h3 className="text-gray-800 font-semibold mb-2">the quick fox jumps over</h3>
-            <p className="text-gray-700">the quick fox jumps over the lazy dog</p>
-            <p className="text-gray-700 mt-2">the quick fox jumps over the lazy dog</p>
-          </div>
+        <div className="text-gray-700">
+          <p><strong>Brand:</strong> {product.brand || "Unknown"}</p>
+          <p><strong>Category:</strong> {product.category || "N/A"}</p>
         </div>
       )}
 
       {activeTab === "reviews" && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <img
-              src="https://picsum.photos/400/300"
-            alt="Placeholder"
-              className="rounded-md mb-4 w-full object-cover"
-            />
-            <p className="text-gray-700 font-semibold">the quick fox jumps over</p>
-            <p className="text-gray-700">the quick fox jumps over the lazy dog</p>
-          </div>
-          <div>
-            <h3 className="text-gray-800 font-semibold mb-2">the quick fox jumps over</h3>
-            <p className="text-gray-700">the quick fox jumps over the lazy dog</p>
-            <p className="text-gray-700 mt-2">the quick fox jumps over the lazy dog</p>
-          </div>
-          <div>
-            <h3 className="text-gray-800 font-semibold mb-2">the quick fox jumps over</h3>
-            <p className="text-gray-700">the quick fox jumps over the lazy dog</p>
-            <p className="text-gray-700 mt-2">the quick fox jumps over the lazy dog</p>
-          </div>
+        <div className="text-gray-700">
+          {product.reviews > 0 ? (
+            <p>{product.reviews} customer reviews available.</p>
+          ) : (
+            <p>No reviews yet.</p>
+          )}
         </div>
       )}
     </div>
@@ -109,11 +57,10 @@ const ProductDetailsTabs = ({ product }) => {
 
 ProductDetailsTabs.propTypes = {
   product: PropTypes.shape({
-    description: PropTypes.string.isRequired,
+    description: PropTypes.string,
     reviews: PropTypes.number,
     brand: PropTypes.string,
     category: PropTypes.string,
-    availability: PropTypes.string,
   }).isRequired,
 };
 

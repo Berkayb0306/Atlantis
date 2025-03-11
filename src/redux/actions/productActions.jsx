@@ -40,7 +40,7 @@ const fetchData = async (endpoint) => {
     return response.data;
   } catch (error) {
     console.error(`❌ ${endpoint} yüklenirken hata oluştu:`, error);
-    throw error;
+    throw error; // Hata fırlatılıyor ki catch bloğu işleyebilsin.
   }
 };
 
@@ -58,7 +58,7 @@ export const fetchCategories = () => async (dispatch) => {
     dispatch(setCategories(data));
     dispatch(setFetchState("FETCHED"));
     console.log("✅ Kategoriler başarıyla yüklendi:", data);
-  } catch (error) {
+  } catch {
     dispatch(setFetchState("FAILED"));
   }
 };
@@ -110,7 +110,7 @@ export const fetchProducts = () => async (dispatch) => {
     dispatch(setFetchState("FETCHED"));
 
     console.log("✅ Ürünler başarıyla yüklendi:", productsData);
-  } catch (error) {
+  } catch {
     dispatch(setFetchState("FAILED"));
   }
 };
