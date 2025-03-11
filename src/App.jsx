@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider, useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import store from "./redux/store";
-import { fetchRoles } from "./redux/actions/roleActions"; // ✅ Rolleri çekmek için import edildi
+import { fetchRoles } from "./redux/actions/roleActions";
+import { verifyToken } from "./redux/actions/clientActions"; // ✅ Token doğrulama eklendi
 import PageContent from "./layout/PageContent";
 import HomePage from "./pages/HomePage";
 import Signup from "./pages/Signup";
@@ -16,20 +17,35 @@ import ContactPage from "./pages/InnerPages/ContactPage";
 import TeamPage from "./pages/InnerPages/TeamPage";
 import UserProfile from "./components/UserProfile";
 import ThemeSwitcher from "./components/ThemeSwitcher";
+import LoginPage from "./pages/LoginPage";
 
 function AppContent() {
   const theme = useSelector((state) => state.client.theme);
-  const roles = useSelector((state) => state.client.roles); // ✅ Redux'tan roller state'ini al
+  const roles = useSelector((state) => state.client.roles);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (roles.length === 0) {
-      dispatch(fetchRoles()); // ✅ Roller boşsa sadece o zaman çağır
+      dispatch(fetchRoles());
     }
   }, [dispatch, roles]);
 
+  // 🌙 Dark Mode'u HTML etiketine ekleyelim
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
+
+  // ✅ Uygulama açıldığında token doğrulama
+  useEffect(() => {
+    dispatch(verifyToken());
+  }, [dispatch]);
+
   return (
-    <div className={`${theme === "dark" ? "dark" : ""} min-h-screen`}>
+    <div className="min-h-screen">
       <Router>
         <PageContent>
           <div className="p-4">
@@ -44,6 +60,7 @@ function AppContent() {
             <Route path="/about" component={AboutPage} />
             <Route path="/blog" component={Blog} />
             <Route path="/contact" component={MainContactPage} />
+            <Route path="/login" component={LoginPage} /> {/* ✅ LoginPage eklendi */}
 
             {/* Inner Pages */}
             <Route path="/inner/contact" component={ContactPage} />

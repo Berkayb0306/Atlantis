@@ -1,3 +1,13 @@
+import {
+  SET_USER,
+  LOGOUT_USER,
+  SET_ROLES,
+  SET_THEME,
+  SET_LANGUAGE,
+  SET_FETCH_STATE,
+  VERIFY_USER,
+} from "../actions/clientActions";
+
 const initialState = {
   user: {},
   addressList: [],
@@ -5,24 +15,38 @@ const initialState = {
   roles: [],
   theme: "light",
   language: "en",
-  fetchState: "NOT_FETCHED", // ✅ FETCH STATE EKLENDİ
+  fetchState: "NOT_FETCHED",
+  isAuthenticated: false,
 };
 
 const clientReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "SET_USER":
-      return { ...state, user: action.payload };
+    case SET_USER:
+      return { ...state, user: action.payload, isAuthenticated: true };
 
-    case "SET_ROLES":
+    case VERIFY_USER:
+      return { ...state, user: action.payload, isAuthenticated: true };
+
+    case LOGOUT_USER:
+      return {
+        ...state,
+        user: {},
+        roles: [],
+        addressList: [],
+        creditCards: [],
+        isAuthenticated: false,
+      };
+
+    case SET_ROLES:
       return { ...state, roles: action.payload };
 
-    case "SET_THEME":
+    case SET_THEME:
       return { ...state, theme: action.payload };
 
-    case "SET_LANGUAGE":
+    case SET_LANGUAGE:
       return { ...state, language: action.payload };
 
-    case "SET_FETCH_STATE": // ✅ FETCH DURUMU YÖNETİMİ EKLENDİ
+    case SET_FETCH_STATE:
       return { ...state, fetchState: action.payload };
 
     default:
