@@ -1,51 +1,22 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import PropTypes from "prop-types";
-import ProductCard from "../components/ProductCard";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react"; //
+import { fetchCategories } from "../redux/actions/productActions";
+import { useParams } from "react-router-dom";
 import ShopCategories from "../components/ShopCategories";
-import BrandLogos from "../components/BrandLogos";
-import ProductFilter from "../components/ProductFilter";
 
 const ShopPage = () => {
-  const [products, setProducts] = useState([]);
-  const [view, setView] = useState("grid"); // ✅ Görünüm (Grid veya Liste)
-  const [sortOption, setSortOption] = useState("popularity"); // ✅ Sıralama Seçeneği
+  const dispatch = useDispatch();
+  const { gender, categoryName, categoryId } = useParams();
+  const categories = useSelector((state) => state.product.categories);
 
   useEffect(() => {
-    axios.get("https://fakestoreapi.com/products")
-      .then((response) => setProducts(response.data))
-      .catch((error) => console.error("Error fetching products:", error));
-  }, []);
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <h2 className="text-3xl font-bold text-center mb-6">Shop</h2>
-
-      {/* Shop Categories Component */}
+      <h2 className="text-3xl font-bold text-center mb-6">Shop - {categoryName}</h2>
       <ShopCategories />
-
-      {/* ✅ Product Filter Component (Eksik prop'lar eklendi) */}
-      <ProductFilter 
-        onViewChange={setView} 
-        onSortChange={setSortOption} 
-        onFilterClick={() => console.log("Filter button clicked")} 
-      />
-
-      {/* Product Grid Component */}
-      <div className={`grid ${view === "grid" ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4" : "grid-cols-1"} gap-6`}>
-        {products.map((product) => (
-          <ProductCard 
-            key={product.id} 
-            id={product.id}  
-            image={product.image} 
-            title={product.title} 
-            price={product.price} 
-          />
-        ))}
-      </div>
-
-      {/* Brand Logos Component */}
-      <BrandLogos />
     </div>
   );
 };

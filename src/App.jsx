@@ -3,7 +3,8 @@ import { Provider, useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import store from "./redux/store";
 import { fetchRoles } from "./redux/actions/roleActions";
-import { verifyToken } from "./redux/actions/clientActions"; // ✅ Token doğrulama eklendi
+import { verifyToken } from "./redux/actions/clientActions";
+import { fetchCategories } from "./redux/actions/productActions"; // ✅ Kategorileri çekmek için import eklendi
 import PageContent from "./layout/PageContent";
 import HomePage from "./pages/HomePage";
 import Signup from "./pages/Signup";
@@ -44,6 +45,11 @@ function AppContent() {
     dispatch(verifyToken());
   }, [dispatch]);
 
+  // ✅ Uygulama açıldığında kategorileri çek
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
   return (
     <div className="min-h-screen">
       <Router>
@@ -60,7 +66,7 @@ function AppContent() {
             <Route path="/about" component={AboutPage} />
             <Route path="/blog" component={Blog} />
             <Route path="/contact" component={MainContactPage} />
-            <Route path="/login" component={LoginPage} /> {/* ✅ LoginPage eklendi */}
+            <Route path="/login" component={LoginPage} />
 
             {/* Inner Pages */}
             <Route path="/inner/contact" component={ContactPage} />
