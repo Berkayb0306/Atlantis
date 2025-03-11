@@ -1,19 +1,27 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProductCard from "./ProductCard";
 
 const categories = ["Men", "Women", "Accessories"];
-const products = [
-  { id: 1, title: "Graphic Design", department: "English Department", price: 16.48, discountPrice: 6.48, image: "https://images.pexels.com/photos/4110004/pexels-photo-4110004.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" },
-  { id: 2, title: "Graphic Design", department: "English Department", price: 16.48, discountPrice: 6.48, image: "https://images.pexels.com/photos/5946093/pexels-photo-5946093.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" },
-  { id: 3, title: "Graphic Design", department: "English Department", price: 16.48, discountPrice: 6.48, image: "https://images.pexels.com/photos/3298640/pexels-photo-3298640.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" },
-  { id: 4, title: "Graphic Design", department: "English Department", price: 16.48, discountPrice: 6.48, image: "https://images.pexels.com/photos/4110004/pexels-photo-4110004.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" },
-  { id: 5, title: "Graphic Design", department: "English Department", price: 16.48, discountPrice: 6.48, image: "https://images.pexels.com/photos/5946093/pexels-photo-5946093.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" },
-  { id: 6, title: "Graphic Design", department: "English Department", price: 16.48, discountPrice: 6.48, image: "https://images.pexels.com/photos/3298640/pexels-photo-3298640.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" },
-];
 
 const ProductShowcase = () => {
   const [activeCategory, setActiveCategory] = useState("Men");
+
+  // ✅ Redux Store’dan verileri al
+  const products = useSelector((state) => state.product.products);
+  const isLoading = useSelector((state) => state.product.fetchState === "FETCHING");
+
+  if (isLoading) {
+    return <div className="text-center text-lg font-semibold">Yükleniyor...</div>;
+  }
+
+  if (!products?.length) {
+    return <div className="text-center text-lg font-semibold">Ürün bulunamadı.</div>;
+  }
+
+  // ✅ Kategoriye göre filtreleme
+  const filteredProducts = products.filter((product) => product.category === activeCategory);
 
   return (
     <div className="container mx-auto px-6 py-12">
@@ -23,7 +31,9 @@ const ProductShowcase = () => {
           {categories.map((category) => (
             <button
               key={category}
-              className={`text-lg font-medium ${activeCategory === category ? "text-blue-500 border-b-2 border-blue-500" : "text-gray-600"}`}
+              className={`text-lg font-medium ${
+                activeCategory === category ? "text-blue-500 border-b-2 border-blue-500" : "text-gray-600"
+              }`}
               onClick={() => setActiveCategory(category)}
             >
               {category}
@@ -39,6 +49,7 @@ const ProductShowcase = () => {
           </div>
         </div>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <div className="col-span-1 bg-yellow-400 p-8 flex flex-col justify-center items-start text-black">
           <h3 className="text-lg font-bold">FURNITURE</h3>
@@ -49,22 +60,15 @@ const ProductShowcase = () => {
             className="w-full mt-4 rounded-lg"
           />
         </div>
-        <div className="col-span-3 grid grid-cols-2 md:grid-cols-3 gap-6">
-          {products.map((product, index) => {
-            if (!product.id) {
-              console.warn("Ürün ID'si eksik!", product);
-            }
 
-            return (
-              <ProductCard
-                key={product.id || index} // ✅ ID eksikse, geçici olarak index kullan
-                id={product.id || index} // ✅ Eğer ID yoksa index değerini kullan
-                image={product.image}
-                title={product.title}
-                price={product.price}
-              />
-            );
-          })}
+        <div className="col-span-3 grid grid-cols-2 md:grid-cols-3 gap-6">
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))
+          ) : (
+            <p className="col-span-3 text-center text-gray-500">Bu kategoride ürün bulunamadı.</p>
+          )}
         </div>
       </div>
     </div>

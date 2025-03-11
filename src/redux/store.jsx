@@ -1,10 +1,7 @@
 import { createStore, applyMiddleware, compose } from "redux";
-import { thunk } from "redux-thunk"; // Named import kullanın
+import { thunk } from "redux-thunk"; // Named import kullanıyoruz
 import logger from "redux-logger";
 import rootReducer from "./reducers/rootReducer";
-
-// Middleware'leri tanımla
-const middleware = [thunk, logger];
 
 // Redux DevTools desteği için alternatif yöntem
 const composeEnhancers =
@@ -12,7 +9,7 @@ const composeEnhancers =
 
 const store = createStore(
   rootReducer,
-  composeEnhancers(applyMiddleware(...middleware))
+  composeEnhancers(applyMiddleware(thunk, logger))
 );
 
 export default store;

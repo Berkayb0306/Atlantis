@@ -1,85 +1,28 @@
+import { useSelector } from "react-redux";
 import ProductCard from "./ProductCard";
 
-const products = [
-  { 
-    id: 1, 
-    title: "Graphic Design", 
-    department: "English Department", 
-    price: 16.48, 
-    discountPrice: 6.48, 
-    image: "https://images.pexels.com/photos/3182754/pexels-photo-3182754.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
-  },
-  { 
-    id: 2, 
-    title: "Graphic Design", 
-    department: "English Department", 
-    price: 16.48, 
-    discountPrice: 6.48, 
-    image: "https://images.pexels.com/photos/7210773/pexels-photo-7210773.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
-  },
-  { 
-    id: 3, 
-    title: "Graphic Design", 
-    department: "English Department", 
-    price: 16.48, 
-    discountPrice: 6.48, 
-    image: "https://images.pexels.com/photos/4255701/pexels-photo-4255701.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
-  },
-  { 
-    id: 4, 
-    title: "Graphic Design", 
-    department: "English Department", 
-    price: 16.48, 
-    discountPrice: 6.48, 
-    image: "https://images.pexels.com/photos/4041694/pexels-photo-4041694.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
-  },
-  { 
-    id: 5, 
-    title: "Graphic Design", 
-    department: "English Department", 
-    price: 16.48, 
-    discountPrice: 6.48, 
-    image: "https://images.pexels.com/photos/4041694/pexels-photo-4041694.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
-  },
-  { 
-    id: 6, 
-    title: "Graphic Design", 
-    department: "English Department", 
-    price: 16.48, 
-    discountPrice: 6.48, 
-    image: "https://images.pexels.com/photos/4041694/pexels-photo-4041694.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
-  },
-  { 
-    id: 7, 
-    title: "Graphic Design", 
-    department: "English Department", 
-    price: 16.48, 
-    discountPrice: 6.48, 
-    image: "https://images.pexels.com/photos/4041694/pexels-photo-4041694.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
-  },
-  { 
-    id: 8, 
-    title: "Graphic Design", 
-    department: "English Department", 
-    price: 16.48, 
-    discountPrice: 6.48, 
-    image: "https://images.pexels.com/photos/4041694/pexels-photo-4041694.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" 
-  },
-];
-
 export default function BestsellerProducts() {
+  // ✅ Redux Store’dan API verisini al
+  const products = useSelector((state) => state.product.products);
+  const isLoading = useSelector((state) => state.product.fetchState === "FETCHING");
+
+  if (isLoading) {
+    return <div className="text-center text-lg font-semibold">Yükleniyor...</div>;
+  }
+
+  if (!products?.length) {
+    return <div className="text-center text-lg font-semibold">Ürün bulunamadı.</div>;
+  }
+
   return (
     <div className="max-w-screen-xl mx-auto p-6">
       <h2 className="text-xl font-bold mb-6">BESTSELLER PRODUCTS</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         {products.map((product) => (
-          <ProductCard 
-            key={product.id} 
-            id={product.id} // ✅ Eksik olan `id` prop'u eklendi!
-            image={product.image} 
-            title={product.title} 
-            price={product.discountPrice} 
+          <ProductCard
+            key={product.id}
+            product={product} // ✅ Tüm product verisini gönder
           />
         ))}
       </div>
