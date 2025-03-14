@@ -40,7 +40,7 @@ const fetchData = async (endpoint) => {
     return response.data;
   } catch (error) {
     console.error(`❌ ${endpoint} yüklenirken hata oluştu:`, error);
-    throw error; // Hata fırlatılıyor ki catch bloğu işleyebilsin.
+    throw error;
   }
 };
 
@@ -50,11 +50,9 @@ export const fetchCategories = () => async (dispatch) => {
 
   try {
     const data = await fetchData("/categories");
-
     if (!Array.isArray(data) || data.length === 0) {
       throw new Error("Kategori listesi boş.");
     }
-
     dispatch(setCategories(data));
     dispatch(setFetchState("FETCHED"));
     console.log("✅ Kategoriler başarıyla yüklendi:", data);
@@ -66,20 +64,14 @@ export const fetchCategories = () => async (dispatch) => {
 // **Ürünleri temizleme fonksiyonu**
 const cleanProductData = (products) => {
   return products.map((product, index) => {
-    console.log("📌 API'den gelen ürün:", product); // API verisini kontrol et
-
     return {
       id: product.id ?? index,
-      title:
-        product.title?.trim() ||
-        product.name?.trim() ||
-        product.description?.slice(0, 30) ||
-        "Ürün Başlığı Mevcut Değil",
+      title: product.title?.trim() || product.name || "Ürün Başlığı Yok",
       image:
-        product.image?.url || // ✅ Eğer `image.url` varsa onu kullan
-        (product.images?.length > 0 ? product.images[0].url : null) || // ✅ `images` array'i varsa ilk elemanın `url`'ünü al
-        product.thumbnail || // ✅ Thumbnail varsa onu kullan
-        "https://via.placeholder.com/150", // ⛔ Görsel yoksa placeholder kullan
+        product.image?.url ||
+        (product.images?.length > 0 ? product.images[0].url : null) ||
+        product.thumbnail ||
+        "https://via.placeholder.com/150",
       price: product.price ?? 0,
       description: product.description || "Açıklama mevcut değil.",
       category: product.category || "Bilinmeyen Kategori",
@@ -87,23 +79,23 @@ const cleanProductData = (products) => {
   });
 };
 
-// **Ürünleri API'den çekmek için Thunk Action**
-export const fetchProducts = () => async (dispatch) => {
+// **Ürünleri API'den çekmek için Thunk Action (Pagination ve Infinite Scroll destekli)**
+export const fetchProducts = (queryParams = "", limit = 25, offset = 0) => async (dispatch) => {
   dispatch(setFetchState("FETCHING"));
 
   try {
-    const data = await fetchData("/products");
-
+    const params = new URLSearchParams(queryParams);
+    params.append("limit", limit);
+    params.append("offset", offset);
+    
+    const endpoint = `/products?${params.toString()}`;
+    const data = await fetchData(endpoint);
     if (!data?.products || !Array.isArray(data.products)) {
       throw new Error("API'den gelen ürün verisi hatalı.");
     }
 
     const productsData = cleanProductData(data.products);
     const totalProducts = data.total ?? productsData.length;
-
-    if (productsData.length === 0) {
-      throw new Error("Ürün listesi boş.");
-    }
 
     dispatch(setProducts(productsData));
     dispatch(setTotal(totalProducts));

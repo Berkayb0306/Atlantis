@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { List, Grid } from "lucide-react";
 
-const ProductFilter = ({ onViewChange, onSortChange, onFilterClick }) => {
+const ProductFilter = ({ onViewChange = () => {}, onSortChange = () => {}, onFilterChange = () => {} }) => {
   return (
     <div className="flex justify-between items-center py-4">
       {/* Görünüm Seçimi */}
@@ -16,24 +16,27 @@ const ProductFilter = ({ onViewChange, onSortChange, onFilterClick }) => {
 
       {/* Sıralama Seçenekleri */}
       <select onChange={(e) => onSortChange(e.target.value)} className="border p-2 rounded-md">
-        <option value="popularity">Popularity</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
-        <option value="rating">Best Rating</option>
+        <option value="price:asc">Price: Low to High</option>
+        <option value="price:desc">Price: High to Low</option>
+        <option value="rating:asc">Rating: Low to High</option>
+        <option value="rating:desc">Rating: High to Low</option>
       </select>
 
-      {/* Filtreleme Butonu */}
-      <button onClick={onFilterClick} className="bg-blue-500 text-white px-4 py-2 rounded-md">
-        Filter
-      </button>
+      {/* Filtreleme Input Alanı */}
+      <input
+        type="text"
+        placeholder="Search products..."
+        onChange={(e) => onFilterChange(e.target.value)}
+        className="border p-2 rounded-md"
+      />
     </div>
   );
 };
 
 ProductFilter.propTypes = {
-  onViewChange: PropTypes.func.isRequired,
-  onSortChange: PropTypes.func.isRequired,
-  onFilterClick: PropTypes.func.isRequired,
+  onViewChange: PropTypes.func,
+  onSortChange: PropTypes.func,
+  onFilterChange: PropTypes.func,
 };
 
 export default ProductFilter;
