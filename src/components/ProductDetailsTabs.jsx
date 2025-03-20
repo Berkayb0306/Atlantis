@@ -41,7 +41,7 @@ const ProductDetailsTabs = ({ product }) => {
           <img
             src={images[0]}
             alt={product.title || product.name || "Product Image"}
-            className="w-full h-auto object-cover rounded-md mb-4 max-w-full"
+            className="w-full max-w-md h-auto object-contain rounded-md mb-4"
             onError={(e) => (e.target.src = "https://via.placeholder.com/150")}
           />
           <p>{product.description || "Ürün açıklaması bulunmuyor."}</p>

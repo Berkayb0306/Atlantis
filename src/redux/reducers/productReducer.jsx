@@ -5,6 +5,8 @@ import {
   SET_FETCH_STATE,
   FETCH_PRODUCT_BY_ID,
   SET_BESTSELLERS,
+  SET_FEATURED_PRODUCT,
+  SET_FEATURED_PRODUCT2, // Yeni action türü
 } from "../actions/productActions";
 
 const FETCH_STATES = {
@@ -20,6 +22,8 @@ const initialState = {
   product: null,
   total: 0,
   bestsellers: [],
+  featuredProduct: null,
+  featuredProduct2: null, // Yeni alan
   fetchState: FETCH_STATES.NOT_FETCHED,
   error: null,
 };
@@ -60,6 +64,12 @@ const productReducer = (state = initialState, action) => {
 
     case SET_BESTSELLERS:
       return { ...state, bestsellers: action.payload || [] };
+
+    case SET_FEATURED_PRODUCT:
+      return { ...state, featuredProduct: action.payload };
+
+    case SET_FEATURED_PRODUCT2: // Yeni case
+      return { ...state, featuredProduct2: action.payload };
 
     default:
       return state;

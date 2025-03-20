@@ -3,16 +3,23 @@ import { Link, useHistory } from "react-router-dom";
 import { Search, ShoppingCart, Heart, LogOut, User, ChevronDown } from "lucide-react";
 import { logoutUser } from "../redux/actions/clientActions";
 import { useState, useRef, useEffect } from "react";
+import CartDropdown from "../components/CartDropdown"; // Yeni import
 
 const Header = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.client.user);
   const categories = useSelector((state) => state.product.categories);
+  const cartItems = useSelector((state) => state.cart.cart); // Sepet içeriğini al
   const [isPagesOpen, setIsPagesOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false); // Sepet dropdown için state
   const pagesMenuRef = useRef(null);
   const categoriesMenuRef = useRef(null);
+  const cartMenuRef = useRef(null); // Sepet dropdown için ref
+
+  // Toplam ürün sayısını hesapla
+  const totalItems = cartItems.reduce((total, item) => total + item.count, 0);
 
   // 📌 Dışarı tıklanınca menülerin kapanmasını sağla
   useEffect(() => {
@@ -22,6 +29,9 @@ const Header = () => {
       }
       if (categoriesMenuRef.current && !categoriesMenuRef.current.contains(event.target)) {
         setIsCategoriesOpen(false);
+      }
+      if (cartMenuRef.current && !cartMenuRef.current.contains(event.target)) {
+        setIsCartOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -85,7 +95,19 @@ const Header = () => {
 
         <div className="flex items-center space-x-6">
           <Search size={20} className="cursor-pointer hover:text-blue-500" />
-          <ShoppingCart size={20} className="hover:text-blue-500 cursor-pointer" />
+          
+          {/* 📌 Sepet İkonu ve Dropdown */}
+          <div className="relative" ref={cartMenuRef}>
+            <button
+              onClick={() => setIsCartOpen(!isCartOpen)}
+              className="flex items-center space-x-2 hover:text-blue-500"
+            >
+              <ShoppingCart size={20} />
+              <span>Sepetim ({totalItems} Ürün)</span>
+            </button>
+            {isCartOpen && <CartDropdown />}
+          </div>
+
           <Heart size={20} className="hover:text-blue-500 cursor-pointer" />
 
           {!user?.email ? (

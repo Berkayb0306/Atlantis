@@ -19,6 +19,7 @@ import TeamPage from "./pages/InnerPages/TeamPage";
 import UserProfile from "./components/UserProfile";
 import ThemeSwitcher from "./components/ThemeSwitcher";
 import LoginPage from "./pages/LoginPage";
+import Cart from "./pages/Cart"; // Cart component’ini import ettik
 
 function AppContent() {
   const theme = useSelector((state) => state.client.theme);
@@ -59,6 +60,7 @@ function AppContent() {
             />
             {/* ShopPage rotası sonra, daha genel */}
             <Route path="/shop/:gender?/:categoryName?/:categoryId?" component={ShopPage} />
+            <Route path="/cart" component={Cart} /> {/* Cart rotasını ekledik */}
             <Route path="/about" component={AboutPage} />
             <Route path="/blog" component={Blog} />
             <Route path="/contact" component={MainContactPage} />

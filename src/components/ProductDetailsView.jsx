@@ -2,7 +2,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { Heart, ShoppingCart, Eye } from "lucide-react";
 
-const ProductDetailsView = ({ product }) => {
+const ProductDetailsView = ({ product, onAddToCart }) => {
   // 🔹 Ürün başlığını uygun formatta çek
   const productTitle =
     product.title?.trim() ||
@@ -34,6 +34,8 @@ const ProductDetailsView = ({ product }) => {
       ? "Stokta Var"
       : "Stokta Yok"
     : "Bilgi Yok";
+
+  const isOutOfStock = product.stock <= 0;
 
   return (
     <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row gap-8">
@@ -126,8 +128,18 @@ const ProductDetailsView = ({ product }) => {
 
         {/* Aksiyon Butonları */}
         <div className="flex items-center space-x-4 mt-6">
-          <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-            Sepete Ekle
+          <button
+            onClick={onAddToCart}
+            disabled={isOutOfStock}
+            className={`px-6 py-2 rounded-md flex items-center gap-2 transition ${
+              isOutOfStock
+                ? "bg-gray-400 text-white cursor-not-allowed"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
+            aria-label={isOutOfStock ? "Stokta yok" : "Sepete ekle"}
+          >
+            <ShoppingCart size={20} />
+            {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
           </button>
           <button className="p-2 border rounded-full hover:bg-gray-200">
             <Heart size={20} />
@@ -162,6 +174,7 @@ ProductDetailsView.propTypes = {
     store_id: PropTypes.number,
     category_id: PropTypes.number,
   }).isRequired,
+  onAddToCart: PropTypes.func.isRequired, // Yeni prop eklendi
 };
 
 export default ProductDetailsView;

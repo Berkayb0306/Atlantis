@@ -1,8 +1,14 @@
+// src/components/ProductCard.jsx
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/actions/cartActions"; // addToCart'ı import et
+import toast from "react-hot-toast"; // Toast için
 
 const ProductCard = ({ product, gender = "all", categoryName = "all", categoryId = "0" }) => {
+  const dispatch = useDispatch();
+
   if (!product || !product.id) {
     console.warn("⚠️ Missing product data:", product);
     return null;
@@ -15,6 +21,12 @@ const ProductCard = ({ product, gender = "all", categoryName = "all", categoryId
   const productNameSlug = safeTitle.toLowerCase().replace(/\s+/g, "-");
 
   const url = `/shop/${gender}/${categoryName}/${categoryId}/${productNameSlug}/${product.id}`;
+
+  const handleAddToCart = (e) => {
+    e.stopPropagation(); // Link'in tıklanmasını engelle
+    dispatch(addToCart(product)); // Ürünü sepete ekle
+    toast.success(`${safeTitle} sepete eklendi!`); // Toast mesajı
+  };
 
   return (
     <div
@@ -34,9 +46,7 @@ const ProductCard = ({ product, gender = "all", categoryName = "all", categoryId
         <p className="text-gray-600 text-sm">${safePrice.toFixed(2)}</p>
       </Link>
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
+        onClick={handleAddToCart}
         className="mt-3 bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-600 transition"
       >
         <ShoppingCart size={16} />

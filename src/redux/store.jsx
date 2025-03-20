@@ -1,9 +1,9 @@
+// src/redux/store.js
 import { createStore, applyMiddleware, compose } from "redux";
-import { thunk } from "redux-thunk"; // Named import kullanıyoruz
+import { thunk } from "redux-thunk";
 import logger from "redux-logger";
 import rootReducer from "./reducers/rootReducer";
 
-// Redux DevTools desteği için alternatif yöntem
 const composeEnhancers =
   (typeof window !== "undefined" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 

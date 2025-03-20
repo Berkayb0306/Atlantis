@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import axiosInstance from "../../utils/axiosInstance";
 
 export const SET_CATEGORIES = "SET_CATEGORIES";
@@ -6,6 +7,8 @@ export const SET_TOTAL = "SET_TOTAL";
 export const SET_FETCH_STATE = "SET_FETCH_STATE";
 export const FETCH_PRODUCT_BY_ID = "FETCH_PRODUCT_BY_ID";
 export const SET_BESTSELLERS = "SET_BESTSELLERS";
+export const SET_FEATURED_PRODUCT = "SET_FEATURED_PRODUCT";
+export const SET_FEATURED_PRODUCT2 = "SET_FEATURED_PRODUCT2"; // Yeni action türü
 
 export const setCategories = (categories) => ({
   type: SET_CATEGORIES,
@@ -30,6 +33,16 @@ export const setFetchState = (fetchState) => ({
 export const setBestsellers = (bestsellers) => ({
   type: SET_BESTSELLERS,
   payload: bestsellers ?? [],
+});
+
+export const setFeaturedProduct = (featuredProduct) => ({
+  type: SET_FEATURED_PRODUCT,
+  payload: featuredProduct ?? null,
+});
+
+export const setFeaturedProduct2 = (featuredProduct2) => ({
+  type: SET_FEATURED_PRODUCT2,
+  payload: featuredProduct2 ?? null,
 });
 
 const fetchData = async (endpoint, errorMessage) => {
@@ -124,6 +137,44 @@ export const fetchBestsellers = (limit = 8) => async (dispatch) => {
     dispatch(setFetchState("FETCHED"));
   } catch (error) {
     console.error(`❌ Error in fetchBestsellers: ${error.message}`);
+    dispatch(setFetchState("FAILED"));
+  }
+};
+
+export const fetchFeaturedProduct = () => async (dispatch) => {
+  dispatch(setFetchState("FETCHING"));
+  try {
+    const params = new URLSearchParams();
+    params.append("sort", "sell_count");
+    params.append("order", "desc");
+    params.append("limit", 1);
+    const endpoint = `/products?${params.toString()}`;
+    const data = await fetchData(endpoint, "Failed to fetch featured product.");
+    const featuredProduct = cleanProductData(data.products)[0];
+    dispatch(setFeaturedProduct(featuredProduct));
+    dispatch(setFetchState("FETCHED"));
+  } catch (error) {
+    console.error(`❌ Error in fetchFeaturedProduct: ${error.message}`);
+    dispatch(setFetchState("FAILED"));
+  }
+};
+
+// Yeni action: fetchFeaturedProduct2
+export const fetchFeaturedProduct2 = () => async (dispatch) => {
+  dispatch(setFetchState("FETCHING"));
+  try {
+    const params = new URLSearchParams();
+    params.append("sort", "sell_count");
+    params.append("order", "desc");
+    params.append("limit", 1);
+    params.append("offset", 1); // İkinci en çok satılan ürünü al
+    const endpoint = `/products?${params.toString()}`;
+    const data = await fetchData(endpoint, "Failed to fetch featured product 2.");
+    const featuredProduct2 = cleanProductData(data.products)[0];
+    dispatch(setFeaturedProduct2(featuredProduct2));
+    dispatch(setFetchState("FETCHED"));
+  } catch (error) {
+    console.error(`❌ Error in fetchFeaturedProduct2: ${error.message}`);
     dispatch(setFetchState("FAILED"));
   }
 };

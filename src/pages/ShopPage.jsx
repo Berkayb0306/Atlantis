@@ -40,9 +40,11 @@ const ShopPage = () => {
 
       {fetchState === "FETCHING" ? (
         <div className="text-center text-lg font-semibold">Loading...</div>
+      ) : fetchState === "FAILED" ? (
+        <div className="text-center text-lg text-red-500">Failed to load products. Please try again later.</div>
       ) : products.length > 0 ? (
         <div
-          className={`grid grid-cols-1 gap-6 ${view === "grid" ? "sm:grid-cols-2 md:grid-cols-4" : ""}`}
+          className={`grid grid-cols-1 gap-6 ${view === "grid" ? "sm:grid-cols-2 md:grid-cols-4" : "md:grid-cols-2"}`} // Liste görünümü için de bir düzenleme yaptık
         >
           {products.map((product) => (
             <ProductCard
