@@ -8,6 +8,7 @@ export const SET_ADDRESS = "SET_ADDRESS";
 export const REMOVE_FROM_CART = "REMOVE_FROM_CART";
 export const UPDATE_CART_ITEM_QUANTITY = "UPDATE_CART_ITEM_QUANTITY";
 export const CLEAR_CART = "CLEAR_CART";
+export const TOGGLE_CART_ITEM_CHECKED = "TOGGLE_CART_ITEM_CHECKED"; // Yeni action türü
 
 // Sepeti güncelle
 export const setCart = (cart) => ({
@@ -48,4 +49,10 @@ export const updateCartItemQuantity = (productId, count) => ({
 // Sepeti temizle
 export const clearCart = () => ({
   type: CLEAR_CART,
+});
+
+// Ürün seçme/seçimi kaldırma
+export const toggleCartItemChecked = (productId) => ({
+  type: TOGGLE_CART_ITEM_CHECKED,
+  payload: productId,
 });

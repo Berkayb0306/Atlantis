@@ -8,6 +8,7 @@ export const ADD_TO_CART = "ADD_TO_CART";
 export const REMOVE_FROM_CART = "REMOVE_FROM_CART";
 export const UPDATE_CART_ITEM_QUANTITY = "UPDATE_CART_ITEM_QUANTITY";
 export const CLEAR_CART = "CLEAR_CART";
+export const TOGGLE_CART_ITEM_CHECKED = "TOGGLE_CART_ITEM_CHECKED"; // Yeni action türü
 
 // Initial state
 const initialState = {
@@ -82,6 +83,18 @@ const cartReducer = (state = initialState, action) => {
       return {
         ...state,
         cart: [],
+      };
+    }
+
+    case TOGGLE_CART_ITEM_CHECKED: {
+      const productId = action.payload;
+      return {
+        ...state,
+        cart: state.cart.map((item) =>
+          item.product.id === productId
+            ? { ...item, checked: !item.checked }
+            : item
+        ),
       };
     }
 
