@@ -1,84 +1,69 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import axiosInstance from "../utils/axiosInstance";
+import { useParams, useHistory } from "react-router-dom";
+import { fetchProductById } from "../redux/actions/productActions";
 import ProductDetailsView from "../components/ProductDetailsView";
 import ProductDetailsTabs from "../components/ProductDetailsTabs";
 import BestsellerProducts from "../components/BestsellerProducts";
 import BrandLogos from "../components/BrandLogos";
-import { fetchProducts } from "../redux/actions/productActions";
 
 const ProductDetail = () => {
-  const { id } = useParams();
+  const params = useParams();
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  // Redux store'dan ürünleri al
-  const products = useSelector(state => state.product.products);
-  const existingProduct = products.find(p => String(p.id) === String(id));
+  const product = useSelector((state) => state.product.product);
+  const fetchState = useSelector((state) => state.product.fetchState);
+  const isLoading = fetchState === "FETCHING";
+  const fetchError = fetchState === "FAILED";
 
-  // Ürünü state içinde tut (ilk olarak Redux'tan, yoksa API'den çekeriz)
-  const [product, setProduct] = useState(existingProduct || null);
-  const [loading, setLoading] = useState(!existingProduct);
-  const [error, setError] = useState(null);
+  const productId = params.productId || params.id;
 
   useEffect(() => {
-    if (!existingProduct) {
-      setLoading(true);
-      setError(null);
-
-      axiosInstance.get(`/products/${id}`)
-        .then((res) => {
-          const data = res.data;
-
-          // 🔹 Görseli düzgün almak için kontrol
-          const productImages = data.images && Array.isArray(data.images) && data.images.length > 0
-            ? data.images.map(img => img.url) // API `images` array'inden URL'leri çek
-            : [data.image || "https://via.placeholder.com/150"]; // Tekil `image` varsa kullan, yoksa placeholder
-
-          const productData = {
-            id: data.id,
-            title: data.title,
-            description: data.description,
-            price: data.price,
-            images: productImages, // ✅ Görseller düzeltildi
-            brand: data.brand || "Unknown",
-            category: data.category || "N/A",
-            reviews: data.rating?.count || 0,
-            availability: "In Stock",
-          };
-
-          setProduct(productData);
-          localStorage.setItem(`product-${id}`, JSON.stringify(productData)); // ✅ Ürünü localStorage'a kaydet
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("❌ Ürün verisi alınırken hata oluştu:", err);
-          setError("Ürün verisi alınamadı. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.");
-          setLoading(false);
-        });
+    console.log("All params:", params);
+    if (productId && (!product || product.id !== Number(productId))) {
+      console.log("Fetching product with ID:", productId);
+      dispatch(fetchProductById(productId));
+    } else if (!productId) {
+      console.error("productId is undefined, check URL or router settings");
     }
-  }, [id, existingProduct]);
+  }, [dispatch, productId, product]);
 
-  // ✅ Sayfa yenilenince, localStorage'dan ürünü al
-  useEffect(() => {
-    if (!product) {
-      const savedProduct = localStorage.getItem(`product-${id}`);
-      if (savedProduct) {
-        setProduct(JSON.parse(savedProduct));
-      }
-    }
-  }, [id, product]);
+  console.log("Product from store:", product);
+  console.log("Fetch state:", fetchState);
 
-  if (loading) {
-    return <p className="text-center text-gray-500">Loading...</p>;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
-  if (error || !product) {
+  if (fetchError) {
     return (
-      <div className="text-center text-red-500">
-        <p>{error || "Ürün bulunamadı."}</p>
-        <button onClick={() => dispatch(fetchProducts())} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
-          Ürünleri Yeniden Yükle
+      <div className="text-center text-red-500 py-6">
+        <p>Ürün yüklenirken bir hata oluştu.</p>
+        <button
+          onClick={() => history.goBack()}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+        >
+          Geri Dön
+        </button>
+      </div>
+    );
+  }
+
+  if (!product || product.id !== Number(productId)) {
+    return (
+      <div className="text-center text-red-500 py-6">
+        <p>Ürün bulunamadı.</p>
+        <p>Debug: product = {JSON.stringify(product)}, productId = {productId}</p>
+        <button
+          onClick={() => history.goBack()}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+        >
+          Geri Dön
         </button>
       </div>
     );
@@ -86,6 +71,12 @@ const ProductDetail = () => {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      <button
+        onClick={() => history.goBack()}
+        className="mb-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+      >
+        Geri
+      </button>
       <ProductDetailsView product={product} />
       <ProductDetailsTabs product={product} />
       <BestsellerProducts />

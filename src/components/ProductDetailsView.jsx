@@ -6,16 +6,16 @@ const ProductDetailsView = ({ product }) => {
   // 🔹 Ürün başlığını uygun formatta çek
   const productTitle =
     product.title?.trim() ||
-    product.name?.trim() || // Eğer `name` alanı varsa onu kullan
-    product.description?.slice(0, 30) || // Eğer başlık yoksa, açıklamanın ilk 30 karakterini al
-    "Ürün Başlığı Mevcut Değil"; // Eğer hiçbir şey yoksa varsayılan başlık ekle
+    product.name?.trim() ||
+    product.description?.slice(0, 30) ||
+    "Ürün Başlığı Mevcut Değil";
 
-  // 🔹 Görsellerin formatını kontrol et ve en uygun olanı kullan
+  // 🔹 Görselleri doğru formatta çek
   const images = Array.isArray(product.images) && product.images.length > 0
-    ? product.images
+    ? product.images.map((img) => img.url)
     : product.image
       ? [product.image]
-      : ["https://via.placeholder.com/150"]; // Eğer görsel yoksa placeholder ekle
+      : ["https://via.placeholder.com/150"];
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -28,6 +28,13 @@ const ProductDetailsView = ({ product }) => {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
+  // 🔹 Stok durumuna göre dinamik metin
+  const availability = product.stock !== undefined
+    ? product.stock > 0
+      ? "Stokta Var"
+      : "Stokta Yok"
+    : "Bilgi Yok";
+
   return (
     <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row gap-8">
       {/* Sol Bölüm: Ürün Görsel Slider */}
@@ -37,25 +44,25 @@ const ProductDetailsView = ({ product }) => {
             src={images[currentIndex]}
             alt={`Product Image ${currentIndex + 1}`}
             className="w-full h-auto object-contain rounded-md"
-            onError={(e) => (e.target.src = "https://via.placeholder.com/150")} // Hata olursa placeholder ekle
+            onError={(e) => (e.target.src = "https://via.placeholder.com/150")}
           />
           {/* Sol Ok */}
           <button
             onClick={prevImage}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full"
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full hover:bg-gray-300"
           >
             ◀
           </button>
           {/* Sağ Ok */}
           <button
             onClick={nextImage}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full hover:bg-gray-300"
           >
             ▶
           </button>
         </div>
 
-        {/* Thumbnail'lar */}
+        {/* Thumbnail’lar */}
         <div className="flex justify-center mt-4 space-x-2">
           {images.map((img, index) => (
             <img
@@ -77,31 +84,51 @@ const ProductDetailsView = ({ product }) => {
         {/* Ürün Başlığı */}
         <h1 className="text-3xl font-bold mb-2">{productTitle}</h1>
 
-        {/* Rating & Reviews */}
-        <div className="flex items-center">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <span
-              key={i}
-              className={`text-yellow-500 text-xl ${i < (product.rating || 0) ? "" : "text-gray-300"}`}
-            >
-              ★
-            </span>
-          ))}
-          <span className="ml-2 text-gray-600 text-sm">{product.reviews || 0} Reviews</span>
+        {/* Rating & Satış Sayısı */}
+        <div className="flex items-center mb-2">
+          {product.rating !== undefined ? (
+            <>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <span
+                  key={i}
+                  className={`text-yellow-500 text-xl ${
+                    i < Math.floor(product.rating) ? "filled" : "text-gray-300"
+                  }`}
+                >
+                  ★
+                </span>
+              ))}
+              <span className="ml-2 text-gray-600 text-sm">
+                {product.rating.toFixed(1)} ({product.sell_count || 0} satış)
+              </span>
+            </>
+          ) : (
+            <span className="text-gray-600 text-sm">Değerlendirme yok</span>
+          )}
         </div>
 
         {/* Fiyat & Stok Bilgisi */}
-        <p className="text-2xl font-bold my-2">${product.price?.toFixed(2) || "0.00"}</p>
+        <p className="text-2xl font-bold my-2">{product.price?.toFixed(2) || "0.00"} TL</p>
         <p className="text-gray-700">
-          Availability: <span className="text-green-600 font-semibold">{product.availability || "In Stock"}</span>
+          Durum:{" "}
+          <span className={`font-semibold ${product.stock > 0 ? "text-green-600" : "text-red-600"}`}>
+            {availability}
+          </span>
+          {product.stock !== undefined && (
+            <span className="ml-2">({product.stock} adet)</span>
+          )}
         </p>
 
         {/* Ürün Açıklaması */}
-        <p className="text-gray-600 mt-4">{product.description || "Ürün açıklaması bulunmuyor."}</p>
+        <p className="text-gray-600 mt-4">
+          {product.description || "Ürün açıklaması bulunmuyor."}
+        </p>
 
         {/* Aksiyon Butonları */}
         <div className="flex items-center space-x-4 mt-6">
-          <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">Select Options</button>
+          <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
+            Sepete Ekle
+          </button>
           <button className="p-2 border rounded-full hover:bg-gray-200">
             <Heart size={20} />
           </button>
@@ -124,12 +151,17 @@ ProductDetailsView.propTypes = {
     description: PropTypes.string,
     price: PropTypes.number,
     image: PropTypes.string,
-    images: PropTypes.arrayOf(PropTypes.string),
+    images: PropTypes.arrayOf(
+      PropTypes.shape({
+        url: PropTypes.string,
+      })
+    ),
     rating: PropTypes.number,
-    reviews: PropTypes.number,
-    availability: PropTypes.string,
+    sell_count: PropTypes.number,
+    stock: PropTypes.number,
+    store_id: PropTypes.number,
+    category_id: PropTypes.number,
   }).isRequired,
 };
 
 export default ProductDetailsView;
- 

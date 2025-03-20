@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import store from "./redux/store";
 import { fetchRoles } from "./redux/actions/roleActions";
 import { verifyToken } from "./redux/actions/clientActions";
-import { fetchCategories } from "./redux/actions/productActions"; // ✅ Kategorileri çekmek için import eklendi
+import { fetchCategories } from "./redux/actions/productActions";
 import PageContent from "./layout/PageContent";
 import HomePage from "./pages/HomePage";
 import Signup from "./pages/Signup";
@@ -26,26 +26,17 @@ function AppContent() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (roles.length === 0) {
-      dispatch(fetchRoles());
-    }
+    if (roles.length === 0) dispatch(fetchRoles());
   }, [dispatch, roles]);
 
-  // 🌙 Dark Mode'u HTML etiketine ekleyelim
   useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
 
-  // ✅ Uygulama açıldığında token doğrulama
   useEffect(() => {
     dispatch(verifyToken());
   }, [dispatch]);
 
-  // ✅ Uygulama açıldığında kategorileri çek
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
@@ -54,21 +45,24 @@ function AppContent() {
     <div className="min-h-screen">
       <Router>
         <PageContent>
-          <div className="p-4">
+          <div className="p-4 flex justify-between items-center">
             <ThemeSwitcher />
             <UserProfile />
           </div>
           <Switch>
             <Route exact path="/" component={HomePage} />
             <Route path="/signup" component={Signup} />
-            <Route path="/shop" component={ShopPage} />
-            <Route path="/product/:id" component={ProductDetail} />
+            {/* ProductDetail rotası önce gelmeli, daha spesifik */}
+            <Route
+              path="/shop/:gender/:categoryName/:categoryId/:productNameSlug/:id"
+              component={ProductDetail}
+            />
+            {/* ShopPage rotası sonra, daha genel */}
+            <Route path="/shop/:gender?/:categoryName?/:categoryId?" component={ShopPage} />
             <Route path="/about" component={AboutPage} />
             <Route path="/blog" component={Blog} />
             <Route path="/contact" component={MainContactPage} />
             <Route path="/login" component={LoginPage} />
-
-            {/* Inner Pages */}
             <Route path="/inner/contact" component={ContactPage} />
             <Route path="/inner/team" component={TeamPage} />
             <Route path="/inner/pricing" component={PricingPage} />
