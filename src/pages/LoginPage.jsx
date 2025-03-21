@@ -1,5 +1,6 @@
+// src/pages/LoginPage.jsx
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux"; // useSelector eklendi
 import { useHistory, useLocation } from "react-router-dom";
 import { loginUser } from "../redux/actions/clientActions";
 import { toast } from "react-toastify";
@@ -11,6 +12,7 @@ const LoginPage = () => {
   const history = useHistory();
   const location = useLocation();
   const [rememberedEmail, setRememberedEmail] = useState("");
+  const isAuthenticated = useSelector((state) => state.client.isAuthenticated); // Login durumu
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail"); // Son başarılı giriş yapan kullanıcının emailini al
@@ -20,19 +22,34 @@ const LoginPage = () => {
     }
   }, [setValue]);
 
+  // Login durumu değiştiğinde yönlendirme yap
+  useEffect(() => {
+    if (isAuthenticated) {
+      const { from } = location.state || { from: null };
+      if (from === "cart") {
+        // Eğer sepetten geliyorsa, checkout sayfasına yönlendir
+        history.replace("/checkout");
+      } else if (from) {
+        // Eğer başka bir sayfadan yönlendirme varsa, oraya git
+        history.replace(from);
+      } else {
+        // Aksi halde ana sayfaya yönlendir
+        history.replace("/");
+      }
+    }
+  }, [isAuthenticated, history, location]);
+
   const onSubmit = async (data) => {
     const result = await dispatch(loginUser(data.email, data.password, data.rememberMe));
 
     if (result.success) {
       toast.success("Başarıyla giriş yaptınız!");
-      
+
       if (data.rememberMe) {
         localStorage.setItem("rememberedEmail", data.email); // Emaili kaydet
       } else {
         localStorage.removeItem("rememberedEmail"); // Beni Hatırla seçili değilse emaili kaldır
       }
-
-      history.replace(location.state?.from || "/");
     } else {
       toast.error(result.message);
     }

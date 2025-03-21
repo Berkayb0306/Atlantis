@@ -1,3 +1,4 @@
+// src/utils/axiosInstance.jsx
 import axios from "axios";
 
 // Axios'un merkezi yapılandırması
@@ -5,10 +6,18 @@ const axiosInstance = axios.create({
   baseURL: "https://workintech-fe-ecommerce.onrender.com",
 });
 
-// Eğer localStorage'da token varsa, axios'un `Authorization` başlığına ekle
-const token = localStorage.getItem("token");
-if (token) {
-  axiosInstance.defaults.headers.common["Authorization"] = token;
-}
+// Her istekten önce token'ı kontrol et ve header'a ekle
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = token; // Token'ı header'a ekle
+    } else {
+      delete config.headers.Authorization; // Token yoksa header'dan sil
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 export default axiosInstance;

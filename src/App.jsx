@@ -1,6 +1,7 @@
+// src/App.jsx
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider, useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, memo } from "react";
 import store from "./redux/store";
 import { fetchRoles } from "./redux/actions/roleActions";
 import { verifyToken } from "./redux/actions/clientActions";
@@ -19,25 +20,36 @@ import TeamPage from "./pages/InnerPages/TeamPage";
 import UserProfile from "./components/UserProfile";
 import ThemeSwitcher from "./components/ThemeSwitcher";
 import LoginPage from "./pages/LoginPage";
-import Cart from "./pages/Cart"; // Cart component’ini import ettik
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-function AppContent() {
+// AppContent bileşenini memo ile sararak gereksiz render’ları önleyelim
+const AppContent = memo(() => {
   const theme = useSelector((state) => state.client.theme);
   const roles = useSelector((state) => state.client.roles);
   const dispatch = useDispatch();
 
+  // Roller yüklenmediyse fetchRoles eylemini çalıştır
   useEffect(() => {
-    if (roles.length === 0) dispatch(fetchRoles());
+    if (!roles || roles.length === 0) {
+      dispatch(fetchRoles());
+    }
   }, [dispatch, roles]);
 
+  // Tema değiştiğinde dark sınıfını ekle/kaldır
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    if (theme) {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+    }
   }, [theme]);
 
+  // Token’ı doğrula (kullanıcı login durumunu kontrol et)
   useEffect(() => {
     dispatch(verifyToken());
   }, [dispatch]);
 
+  // Kategorileri yükle
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
@@ -46,12 +58,15 @@ function AppContent() {
     <div className="min-h-screen">
       <Router>
         <PageContent>
+          {/* Üst kısımda tema değiştirici ve kullanıcı profili */}
           <div className="p-4 flex justify-between items-center">
             <ThemeSwitcher />
             <UserProfile />
           </div>
           <Switch>
+            {/* Ana sayfa */}
             <Route exact path="/" component={HomePage} />
+            {/* Kayıt olma sayfası */}
             <Route path="/signup" component={Signup} />
             {/* ProductDetail rotası önce gelmeli, daha spesifik */}
             <Route
@@ -60,11 +75,19 @@ function AppContent() {
             />
             {/* ShopPage rotası sonra, daha genel */}
             <Route path="/shop/:gender?/:categoryName?/:categoryId?" component={ShopPage} />
-            <Route path="/cart" component={Cart} /> {/* Cart rotasını ekledik */}
+            {/* Sepet sayfası */}
+            <Route path="/cart" component={Cart} />
+            {/* Checkout sayfası (korumalı rota) */}
+            <ProtectedRoute path="/checkout" component={Checkout} />
+            {/* Hakkında sayfası */}
             <Route path="/about" component={AboutPage} />
+            {/* Blog sayfası */}
             <Route path="/blog" component={Blog} />
+            {/* İletişim sayfası (ana) */}
             <Route path="/contact" component={MainContactPage} />
+            {/* Giriş sayfası */}
             <Route path="/login" component={LoginPage} />
+            {/* İç sayfalar */}
             <Route path="/inner/contact" component={ContactPage} />
             <Route path="/inner/team" component={TeamPage} />
             <Route path="/inner/pricing" component={PricingPage} />
@@ -73,7 +96,10 @@ function AppContent() {
       </Router>
     </div>
   );
-}
+});
+
+// AppContent için displayName tanımlıyoruz
+AppContent.displayName = "AppContent";
 
 function App() {
   return (

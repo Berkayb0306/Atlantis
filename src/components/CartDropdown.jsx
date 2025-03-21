@@ -1,8 +1,9 @@
 // src/components/CartDropdown.jsx
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import PropTypes from "prop-types"; // PropTypes’ı import ediyoruz
 
-const CartDropdown = () => {
+const CartDropdown = ({ onClose }) => {
   const history = useHistory();
   const cartItems = useSelector((state) => state.cart.cart);
 
@@ -46,24 +47,26 @@ const CartDropdown = () => {
           </div>
 
           {/* Butonlar */}
-          <div className="mt-4 flex space-x-2">
+          <div className="mt-4">
             <button
-              onClick={() => history.push("/cart")}
-              className="flex-1 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+              onClick={() => {
+                history.push("/cart");
+                onClose(); // Dropdown’ı kapat
+              }}
+              className="w-full px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
             >
               Sepete Git
-            </button>
-            <button
-              onClick={() => history.push("/checkout")}
-              className="flex-1 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
-            >
-              Siparişi Tamamla
             </button>
           </div>
         </>
       )}
     </div>
   );
+};
+
+// PropTypes ile props’ları tanımlıyoruz
+CartDropdown.propTypes = {
+  onClose: PropTypes.func.isRequired, // onClose bir fonksiyon olmalı ve zorunlu
 };
 
 export default CartDropdown;

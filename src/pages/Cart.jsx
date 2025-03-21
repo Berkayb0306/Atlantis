@@ -1,13 +1,15 @@
 // src/pages/Cart.jsx
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom"; // useHistory eklendi
 import toast from "react-hot-toast";
 import { removeFromCart, updateCartItemQuantity, clearCart, toggleCartItemChecked } from "../redux/actions/cartActions";
 import { Trash2, Plus, Minus } from "lucide-react";
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const history = useHistory(); // Yönlendirme için useHistory
   const cartItems = useSelector((state) => state.cart.cart);
+  const isAuthenticated = useSelector((state) => state.client.isAuthenticated); // Login durumu
 
   const handleRemoveFromCart = (productId, productTitle) => {
     dispatch(removeFromCart(productId));
@@ -41,6 +43,17 @@ const Cart = () => {
   const selectedTotal = parseFloat(calculateSelectedTotal());
   const discount = selectedTotal >= 150 ? shippingFee : 0; // 150 TL ve üzeri kargo bedava
   const grandTotal = (selectedTotal + shippingFee - discount).toFixed(2);
+
+  // Sipariş Oluştur butonuna tıklanınca
+  const handleCreateOrder = () => {
+    if (isAuthenticated) {
+      // Kullanıcı login olmuşsa, checkout sayfasına yönlendir
+      history.push("/checkout");
+    } else {
+      // Kullanıcı login olmamışsa, login sayfasına yönlendir
+      history.push("/login", { from: "cart" }); // Yönlendirme bilgisi ekliyoruz
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -208,8 +221,8 @@ const Cart = () => {
                 </div>
               </div>
               <button
+                onClick={handleCreateOrder}
                 className="w-full mt-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
-                disabled
               >
                 Sipariş Oluştur
               </button>

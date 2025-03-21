@@ -1,9 +1,10 @@
+// src/components/Header.jsx
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { Search, ShoppingCart, Heart, LogOut, User, ChevronDown } from "lucide-react";
 import { logoutUser } from "../redux/actions/clientActions";
 import { useState, useRef, useEffect } from "react";
-import CartDropdown from "../components/CartDropdown"; // Yeni import
+import CartDropdown from "../components/CartDropdown";
 
 const Header = () => {
   const history = useHistory();
@@ -105,7 +106,7 @@ const Header = () => {
               <ShoppingCart size={20} />
               <span>Sepetim ({totalItems} Ürün)</span>
             </button>
-            {isCartOpen && <CartDropdown />}
+            {isCartOpen && <CartDropdown onClose={() => setIsCartOpen(false)} />}
           </div>
 
           <Heart size={20} className="hover:text-blue-500 cursor-pointer" />
